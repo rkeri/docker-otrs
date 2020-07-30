@@ -34,9 +34,9 @@ if [ "${OTRS_INSTALL}" != "yes" ]; then
     upgrade
   fi
   if [ "${OTRS_INSTALL}" == "no" ]; then
-    print_info "Starting \e[${OTRS_ASCII_COLOR_BLUE}m ((OTRS))\e[0m \e[31m${OTRS_VERSION}\e[0m \e[${OTRS_ASCII_COLOR_BLUE}mCommunity Edition\e[0m \e[0m\n"
     if [ -e "${OTRS_ROOT}var/tmp/firsttime" ]; then
       #Load default install
+      print_info "Starting a clean\e[${OTRS_ASCII_COLOR_BLUE}m OTRS\e[0m \e[31m${OTRS_VERSION}\e[0m \e[${OTRS_ASCII_COLOR_BLUE}mFree\e[0m \e[0minstallation ready to be configured !!\n"
       load_defaults
       #Set default admin user password
       print_info "Setting password for default admin account \e[${OTRS_ASCII_COLOR_BLUE}mroot@localhost\e[0m to: \e[31m**********\e[0m"
@@ -46,6 +46,22 @@ if [ "${OTRS_INSTALL}" != "yes" ]; then
   elif [ "${OTRS_INSTALL}" == "restore" ];then
     print_info "Restoring OTRS backup: \e[${OTRS_ASCII_COLOR_BLUE}m${OTRS_BACKUP_DATE}\e[0m for host \e[${OTRS_ASCII_COLOR_BLUE}m${OTRS_HOSTNAME}\e[0m"
     restore_backup ${OTRS_BACKUP_DATE}
+  fi
+
+  # Check if OTRS minor version changed and do a minor version upgrade
+  if [ -e ${OTRS_ROOT}/Kernel/current_version ] && [ ${OTRS_UPGRADE} != "yes" ]; then
+    current_version=$(cat ${OTRS_ROOT}/Kernel/current_version)
+    new_version=$(echo ${OTRS_VERSION}|cut -d'-' -f1)
+    check_version ${current_version} ${new_version}
+    if [ $? -eq 1 ]; then
+      print_info "Doing minor version upgrade..."
+      upgrade_minor_version
+      echo ${new_version} > ${OTRS_ROOT}/Kernel/current_version
+    fi
+  else
+    current_version=$(cat ${OTRS_ROOT}/RELEASE |grep VERSION|cut -d'=' -f2)
+    current_version="${current_version## }"
+    echo ${current_version} > ${OTRS_ROOT}/Kernel/current_version
   fi
 
   # Only adjust permissions if OTRS_SET_PERMISSIONS == yes

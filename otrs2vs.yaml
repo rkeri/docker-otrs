@@ -1,0 +1,43 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.istio.io/v1beta1","kind":"VirtualService","metadata":{"annotations":{},"name":"otrs","namespace":"otrs-2"},"spec":{"gateways":["istio-system/default-gateway"],"hosts":["otrs2.k8s.icellmobilsoft.hu"],"http":[{"match":[{"uri":{"prefix":"/"}}],"route":[{"destination":{"host":"otrs","port":{"number":80}}}]}]}}
+  creationTimestamp: "2020-07-23T10:44:07Z"
+  generation: 1
+  managedFields:
+  - apiVersion: networking.istio.io/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:kubectl.kubernetes.io/last-applied-configuration: {}
+      f:spec:
+        .: {}
+        f:gateways: {}
+        f:hosts: {}
+        f:http: {}
+    manager: kubectl
+    operation: Update
+    time: "2020-07-23T10:44:07Z"
+  name: otrs
+  namespace: otrs-2
+  resourceVersion: "84837972"
+  selfLink: /apis/networking.istio.io/v1beta1/namespaces/otrs-2/virtualservices/otrs
+  uid: 7374b241-fb3f-4866-a892-85b3a6cc9d79
+spec:
+  gateways:
+  - istio-system/default-gateway
+  hosts:
+  - otrs2.k8s.icellmobilsoft.hu
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: otrs
+        port:
+          number: 80

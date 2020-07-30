@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  MYSQL_ROOT_PASSWORD: Nogger123
+  MYSQL_ROOT_USER: root
+  OTRS_BACKUP_TIME: 0 6 * * *
+  OTRS_BACKUP_TYPE: fullbackup
+  OTRS_DB_HOST: mariadb
+  OTRS_DB_NAME: otrs
+  OTRS_DB_PASSWORD: Nogger123
+  OTRS_DB_PORT: "3306"
+  OTRS_DB_USER: otrs
+  OTRS_ROOT_PASSWORD: Nogger123
+  OTRS_INSTALL: yes
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mariadb-env
+  name: env

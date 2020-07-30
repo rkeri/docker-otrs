@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  annotations: {}
+  name: otrsv3
+  namespace: otrsv3
+spec:
+  gateways:
+  - istio-system/default-gateway
+  hosts:
+  - otrsv3.k8s.icellmobilsoft.hu
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: otrs
+        port:
+          number: 80

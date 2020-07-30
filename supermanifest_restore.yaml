@@ -1,0 +1,375 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o supermanifest.yaml
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: mariadb
+    name: mariadb
+  spec:
+    ports:
+    - name: "3306"
+      port: 3306
+      targetPort: 3306
+    selector:
+      io.kompose.service: mariadb
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o supermanifest.yaml
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs
+    name: otrs
+  spec:
+    ports:
+    - name: "80"
+      port: 80
+      targetPort: 80
+    selector:
+      io.kompose.service: otrs
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o supermanifest.yaml
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: mariadb
+    name: mariadb
+  spec:
+    # replicas: 1
+    selector:
+      matchLabels:
+        io.kompose.service: mariadb
+    serviceName: "mariadb"
+    replicas: 1
+    # strategy:
+    #   type: Recreate
+    template:
+      metadata:
+        annotations:
+          kompose.cmd: kompose convert -f supercompose.yml -o supermanifest.yaml
+          kompose.version: 1.21.0 (992df58d8)
+        creationTimestamp: null
+        labels:
+          io.kompose.service: mariadb
+      spec:
+        containers:
+        - name: mariadb
+          env:
+           - name: OTRS_DB_NAME
+             value: otrs
+           - name: OTRS_DB_HOST
+             value: mariadb
+           - name: OTRS_DB_USER
+             value: otrs
+           - name: OTRS_DB_PASSWORD
+             value: Nogger123
+           - name: MYSQL_ROOT_USER
+             value: root
+           - name: MYSQL_ROOT_PASSWORD
+             value: Nogger123
+           - name: OTRS_ARTICLE_STORAGE_TYPE
+             value: ArticleStorageDB
+           - name: OTRS_SET_PERMISSIONS
+             value: "yes"
+           - name: OTRS_NUMBER_GENERATOR
+             value: "DateChecksum"
+           - name: OTRS_BACKUP_ROTATION
+             value: "10"
+           - name: OTRS_BACKUP_TYPE
+             value: "fullbackup"
+           - name: OTRS_BACKUP_TIME
+             value: "0 6 * * *"
+           - name: OTRS_DEBUG
+             value: "no"
+           - name: TZ
+             value: Etc/UTC
+           # - name: OTRS_INSTALL
+           #   value: "restore"
+           # - name: OTRS_BACKUP_DATE
+           #   value: "otrs-2020-07-30_02-00-fullbackup.tar.gz"
+           # - name: OTRS_DROP_DATABASE
+           #   value: "yes"
+          image: juanluisbaptiste/otrs-mariadb:latest
+          imagePullPolicy: ""
+          ports:
+          - containerPort: 3306
+          resources: {}
+          volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: mariadb-claim0
+            subPath: mysql
+          # - mountPath: /etc/localtime
+          #   name: mariadb-hostpath0
+          #   readOnly: true
+        restartPolicy: Always
+        serviceAccountName: ""
+        volumes:
+        - name: mariadb-claim0
+          persistentVolumeClaim:
+            claimName: mariadb-claim0
+        # - name: mariadb-hostpath0
+        #   hostPath:
+        #     path: /etc/localtime
+        #     type: File
+        # - hostPath:
+        #     path: /etc/localtime
+        #     type: File
+        #   name: mariadb-hostpath0
+  status:
+    replicas: 1
+# - apiVersion: v1
+#   data:
+#     MYSQL_ROOT_PASSWORD: Nogger123
+#     MYSQL_ROOT_USER: root
+#     OTRS_BACKUP_TIME: 0 6 * * *
+#     OTRS_BACKUP_TYPE: fullbackup
+#     OTRS_DB_HOST: mariadb
+#     OTRS_DB_NAME: otrs
+#     OTRS_DB_PASSWORD: Nogger123
+#     OTRS_DB_PORT: "3306"
+#     OTRS_DB_USER: otrs
+#     OTRS_DEBUG: "no"
+#     OTRS_HOSTNAME: otrsv3.k8s.icellmobilsoft
+#     OTRS_ROOT_PASSWORD: Nogger123
+#   kind: ConfigMap
+#   metadata:
+#     creationTimestamp: null
+#     labels:
+#       io.kompose.service: mariadb-env
+#     name: env
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: mariadb-claim0
+    name: mariadb-claim0
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+
+# - apiVersion: v1
+#   kind: PersistentVolumeClaim
+#   metadata:
+#     creationTimestamp: null
+#     labels:
+#       io.kompose.service: mariadb-claim1
+#     name: mariadb-claim1
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     resources:
+#       requests:
+#         storage: 100Mi
+#   status: {}
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o supermanifest.yaml
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs
+    name: otrs
+  spec:
+    # replicas: 1
+    selector:
+      matchLabels:
+        io.kompose.service: otrs
+    serviceName: "otrs"
+    replicas: 1
+    # strategy:
+    #   type: Recreate
+    template:
+      metadata:
+        annotations:
+          kompose.cmd: kompose convert -f supercompose.yml -o supermanifest.yaml
+          kompose.version: 1.21.0 (992df58d8)
+        creationTimestamp: null
+        labels:
+          io.kompose.service: otrs
+      spec:
+        containers:
+        - name: otrs
+          env:
+           - name: OTRS_DB_NAME
+             value: otrs
+           - name: OTRS_DB_HOST
+             value: mariadb
+           - name: OTRS_DB_USER
+             value: otrs
+           - name: OTRS_DB_PASSWORD
+             value: Nogger123
+           - name: MYSQL_ROOT_USER
+             value: root
+           - name: MYSQL_ROOT_PASSWORD
+             value: Nogger123
+           - name: OTRS_ARTICLE_STORAGE_TYPE
+             value: ArticleStorageDB
+           - name: OTRS_SET_PERMISSIONS
+             value: "yes"
+           - name: OTRS_NUMBER_GENERATOR
+             value: "DateChecksum"
+           - name: OTRS_BACKUP_ROTATION
+             value: "10"
+           - name: OTRS_BACKUP_TYPE
+             value: "fullbackup"
+           - name: OTRS_BACKUP_TIME
+             value: "0 6 * * *"
+           - name: OTRS_DEBUG
+             value: "no"
+           - name: TZ
+             value: Etc/UTC
+           # - name: OTRS_INSTALL
+           #   value: "restore"
+           # - name: OTRS_BACKUP_DATE
+           #   value: "otrs-2020-07-30_02-00-fullbackup.tar.gz"
+           # - name: OTRS_DROP_DATABASE
+           #   value: "yes"
+          image: juanluisbaptiste/otrs:6.0.28
+          imagePullPolicy: ""
+          ports:
+          - containerPort: 80
+          resources: {}
+          volumeMounts:
+          - mountPath: /opt/otrs/Kernel
+            name: otrs-claim0
+            subPath: Kernel
+          - mountPath: /opt/otrs/var/httpd/htdocs/skins/
+            name: otrs-claim1
+          - mountPath: /var/otrs/backups
+            name: otrs-claim2
+          - mountPath: /opt/otrs/addons
+            name: otrs-claim3
+          - mountPath: /opt/otrs/db_upgrade
+            name: otrs-claim4
+          # - mountPath: /etc/localtime
+          #   name: otrs-hostpath0
+          #   readOnly: true
+        restartPolicy: Always
+        serviceAccountName: ""
+        volumes:
+        - name: otrs-claim0
+          persistentVolumeClaim:
+            claimName: otrs-claim0
+        - name: otrs-claim1
+          persistentVolumeClaim:
+            claimName: otrs-claim1
+        - name: otrs-claim2
+          persistentVolumeClaim:
+            claimName: otrs-claim2
+        - name: otrs-claim3
+          persistentVolumeClaim:
+            claimName: otrs-claim3
+        - name: otrs-claim4
+          persistentVolumeClaim:
+            claimName: otrs-claim4
+        # - name: otrs-hostpath0
+        #   hostPath:
+        #     path: /etc/localtime
+        #     type: File
+        # - hostPath:
+        #     path: /etc/localtime
+        #     type: File
+        #   name: otrs-hostpath0
+  status:
+    replicas: 1
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs-claim0
+    name: otrs-claim0
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs-claim1
+    name: otrs-claim1
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs-claim2
+    name: otrs-claim2
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs-claim3
+    name: otrs-claim3
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs-claim4
+    name: otrs-claim4
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+# - apiVersion: v1
+#   kind: PersistentVolumeClaim
+#   metadata:
+#     creationTimestamp: null
+#     labels:
+#       io.kompose.service: otrs-claim5
+#     name: otrs-claim5
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     resources:
+#       requests:
+#         storage: 100Mi
+#   status: {}
+kind: List
+metadata: {}

@@ -11,7 +11,6 @@ services:
   #  - "80"
     links:
     - mariadb:mariadb
-    - postfix:postfix
   # You should use env_file: instead of environment: for your environment
   # variables. Look at the README.md file for a list of available variables.
     env_file: .env
@@ -23,7 +22,6 @@ services:
       - './volumes/backup:/var/otrs/backups'
       - './volumes/addons:/opt/otrs/addons'
       - './volumes/db_upgrade:/opt/otrs/db_upgrade'
-      - '/etc/localtime:/etc/localtime:ro'
   mariadb:
     image: juanluisbaptiste/otrs-mariadb:latest
     expose:
@@ -31,11 +29,3 @@ services:
     env_file: .env
     volumes:
       - './volumes/mysql:/var/lib/mysql'
-      - '/etc/localtime:/etc/localtime:ro'
-  postfix:
-     image: juanluisbaptiste/postfix:latest
-     expose:
-     - "25"
-     # See juanluisbaptiste/postfix github page for the contents
-     # and an explanation of credentials-smtp.
-     env_file: .env

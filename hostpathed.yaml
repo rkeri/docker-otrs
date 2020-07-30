@@ -1,0 +1,303 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o hostpathed.yaml --volumes=hostPath
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: mariadb
+    name: mariadb
+  spec:
+    ports:
+    - name: "3306"
+      port: 3306
+      targetPort: 3306
+    selector:
+      io.kompose.service: mariadb
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o hostpathed.yaml --volumes=hostPath
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs
+    name: otrs
+  spec:
+    ports:
+    - name: "80"
+      port: 80
+      targetPort: 80
+    selector:
+      io.kompose.service: otrs
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o hostpathed.yaml --volumes=hostPath
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: mariadb
+    name: mariadb
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        io.kompose.service: mariadb
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          kompose.cmd: kompose convert -f supercompose.yml -o hostpathed.yaml --volumes=hostPath
+          kompose.version: 1.21.0 (992df58d8)
+        creationTimestamp: null
+        labels:
+          io.kompose.service: mariadb
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                key: MYSQL_ROOT_PASSWORD
+                name: env
+          - name: MYSQL_ROOT_USER
+            valueFrom:
+              configMapKeyRef:
+                key: MYSQL_ROOT_USER
+                name: env
+          - name: OTRS_BACKUP_TIME
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_BACKUP_TIME
+                name: env
+          - name: OTRS_BACKUP_TYPE
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_BACKUP_TYPE
+                name: env
+          - name: OTRS_DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_HOST
+                name: env
+          - name: OTRS_DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_NAME
+                name: env
+          - name: OTRS_DB_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_PASSWORD
+                name: env
+          - name: OTRS_DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_PORT
+                name: env
+          - name: OTRS_DB_USER
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_USER
+                name: env
+          - name: OTRS_DEBUG
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DEBUG
+                name: env
+          - name: OTRS_HOSTNAME
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_HOSTNAME
+                name: env
+          - name: OTRS_ROOT_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_ROOT_PASSWORD
+                name: env
+          image: juanluisbaptiste/otrs-mariadb:latest
+          imagePullPolicy: ""
+          name: mariadb
+          ports:
+          - containerPort: 3306
+          resources: {}
+          volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: mariadb-hostpath0
+          - mountPath: /etc/localtime
+            name: mariadb-hostpath1
+            readOnly: true
+        restartPolicy: Always
+        serviceAccountName: ""
+        volumes:
+        - hostPath:
+            path: /home/lobelt/Documents/docker-otrs/volumes/mysql
+          name: mariadb-hostpath0
+        - hostPath:
+            path: /etc/localtime
+          name: mariadb-hostpath1
+  status: {}
+- apiVersion: v1
+  data:
+    MYSQL_ROOT_PASSWORD: Nogger123
+    MYSQL_ROOT_USER: root
+    OTRS_BACKUP_TIME: 0 6 * * *
+    OTRS_BACKUP_TYPE: fullbackup
+    OTRS_DB_HOST: mariadb
+    OTRS_DB_NAME: otrs
+    OTRS_DB_PASSWORD: Nogger123
+    OTRS_DB_PORT: "3306"
+    OTRS_DB_USER: otrs
+    OTRS_DEBUG: yes
+    OTRS_HOSTNAME: otrsv3.k8s.icellmobilsoft
+    OTRS_ROOT_PASSWORD: Nogger123
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: mariadb-env
+    name: env
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f supercompose.yml -o hostpathed.yaml --volumes=hostPath
+      kompose.version: 1.21.0 (992df58d8)
+    creationTimestamp: null
+    labels:
+      io.kompose.service: otrs
+    name: otrs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        io.kompose.service: otrs
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          kompose.cmd: kompose convert -f supercompose.yml -o hostpathed.yaml --volumes=hostPath
+          kompose.version: 1.21.0 (992df58d8)
+        creationTimestamp: null
+        labels:
+          io.kompose.service: otrs
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                key: MYSQL_ROOT_PASSWORD
+                name: env
+          - name: MYSQL_ROOT_USER
+            valueFrom:
+              configMapKeyRef:
+                key: MYSQL_ROOT_USER
+                name: env
+          - name: OTRS_BACKUP_TIME
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_BACKUP_TIME
+                name: env
+          - name: OTRS_BACKUP_TYPE
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_BACKUP_TYPE
+                name: env
+          - name: OTRS_DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_HOST
+                name: env
+          - name: OTRS_DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_NAME
+                name: env
+          - name: OTRS_DB_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_PASSWORD
+                name: env
+          - name: OTRS_DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_PORT
+                name: env
+          - name: OTRS_DB_USER
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DB_USER
+                name: env
+          - name: OTRS_DEBUG
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_DEBUG
+                name: env
+          - name: OTRS_HOSTNAME
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_HOSTNAME
+                name: env
+          - name: OTRS_ROOT_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                key: OTRS_ROOT_PASSWORD
+                name: env
+          image: juanluisbaptiste/otrs:latest
+          imagePullPolicy: ""
+          name: otrs
+          ports:
+          - containerPort: 80
+          resources: {}
+          volumeMounts:
+          - mountPath: /opt/otrs/Kernel
+            name: otrs-hostpath0
+          - mountPath: /opt/otrs/var/httpd/htdocs/skins/
+            name: otrs-hostpath1
+          - mountPath: /var/otrs/backups
+            name: otrs-hostpath2
+          - mountPath: /opt/otrs/addons
+            name: otrs-hostpath3
+          - mountPath: /opt/otrs/db_upgrade
+            name: otrs-hostpath4
+          - mountPath: /etc/localtime
+            name: otrs-hostpath5
+            readOnly: true
+        restartPolicy: Always
+        serviceAccountName: ""
+        volumes:
+        - hostPath:
+            path: /home/lobelt/Documents/docker-otrs/volumes/config
+          name: otrs-hostpath0
+        - hostPath:
+            path: /home/lobelt/Documents/docker-otrs/volumes/skins
+          name: otrs-hostpath1
+        - hostPath:
+            path: /home/lobelt/Documents/docker-otrs/volumes/backup
+          name: otrs-hostpath2
+        - hostPath:
+            path: /home/lobelt/Documents/docker-otrs/volumes/addons
+          name: otrs-hostpath3
+        - hostPath:
+            path: /home/lobelt/Documents/docker-otrs/volumes/db_upgrade
+          name: otrs-hostpath4
+        - hostPath:
+            path: /etc/localtime
+          name: otrs-hostpath5
+  status: {}
+kind: List
+metadata: {}
+
