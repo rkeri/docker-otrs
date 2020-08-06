@@ -1,0 +1,42 @@
+apiVersion: v1
+data:
+  MYSQL_ROOT_PASSWORD: changeme
+  MYSQL_ROOT_USER: root
+  OTRS_ARTICLE_STORAGE_TYPE: ArticleStorageDB
+  OTRS_BACKUP_COMRESSION: gzip
+  OTRS_BACKUP_DATE: ""
+  OTRS_BACKUP_ROTATION: "10"
+  OTRS_BACKUP_TIME: 0 6 * * *
+  OTRS_BACKUP_TYPE: fullbackup
+  OTRS_CRON_BACKUP_SCRIPT: /etc/cron.d/otrs_backup_custom
+  OTRS_DB_HOST: mariadb
+  OTRS_DB_NAME: otrs
+  OTRS_DB_PASSWORD: changeme
+  OTRS_DB_PORT: "3306"
+  OTRS_DB_USER: otrs
+  OTRS_DEBUG: no
+  OTRS_DROP_DATABASE: no
+  OTRS_HOSTNAME: otrs.icms
+  OTRS_INSTALL: no
+  OTRS_LANGUAGE: en
+  OTRS_NUMBER_GENERATOR: DateChecksum
+  OTRS_ROOT_PASSWORD: changeme
+  OTRS_SECRETS_FILE: ""
+  OTRS_SENDMAIL_MODULE: SMTP
+  OTRS_SET_PERMISSIONS: yes
+  OTRS_SMTP_PASSWORD: ""
+  OTRS_SMTP_PORT: ""
+  OTRS_SMTP_SERVER: ""
+  OTRS_SMTP_USERNAME: ""
+  OTRS_TICKET_COUNTER: ""
+  OTRS_TIMEZONE: UTC
+  OTRS_UPGRADE: no
+  OTRS_UPGRADE_BACKUP: yes
+  OTRS_UPGRADE_XML_FILES: no
+  SHOW_OTRS_LOGO: yes
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mariadb-env
+  name: env
